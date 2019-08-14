@@ -23,9 +23,9 @@ trait MakesHttpRequests
 	 * @return mixed
 	 *
 	 */
-	private function get($uri)
+	private function get($uri, $params = [])
 	{
-		return $this->request('GET', $uri);
+		return $this->request('GET', $uri, $params);
 	}
 
 
@@ -83,11 +83,19 @@ trait MakesHttpRequests
 	 * @return mixed
 	 *
 	 */
-	private function request(string $verb, string $uri, array $payload = [])
+	private function request(string $verb, string $uri, array $params = [])
 	{
-		$response = $this->guzzle->request($verb, $uri,
-			empty($payload) ? [] : ['form_params' => $payload]
-		);
+		$options = [];
+
+		if ( ! empty($params)) {
+			if ($verb === 'GET') {
+				$options['query'] = $params;
+			} else {
+				$options['form_params'] = $params;
+			}
+		}
+
+		$response = $this->guzzle->request($verb, $uri, $options);
 
 		if ($response->getStatusCode() != 200) {
 			return $this->handleRequestError($response);

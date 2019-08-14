@@ -12,7 +12,9 @@ class RunCloud
 	use MakesHttpRequests,
 		Actions\ManagesServers,
 		Actions\ManagesWebapps,
-		Actions\ManagesDatabases;
+		Actions\ManagesDatabases,
+		Actions\ManagesAPIKeys,
+		Actions\ManagesStaticData;
 
 
 	/**
@@ -105,19 +107,23 @@ class RunCloud
 	}
 
 
-	protected function getAllData(string $path)
+	protected function getAllData(string $path, array $query = [])
 	{
-		$page_data = $this->get($path);
+		$page_data = $this->get($path, $query);
 		$data_all = $page_data['data'];
 
+		if (array_key_exists('meta', $page_data)) {
 
-		$page = $page_data['meta']['pagination']['current_page'];
-		$total_pages = $page_data['meta']['pagination']['total_pages'];
+			$page = $page_data['meta']['pagination']['current_page'];
+			$total_pages = $page_data['meta']['pagination']['total_pages'];
 
-		 while ($page < $total_pages) {
-			$page++;
-			$data = $this->get($path.'?page='.$page)['data'];
-			$data_all = array_merge($data_all, $data);
+			 while ($page < $total_pages) {
+				$page++;
+				$page_query = array_merge($query, ['page' => $page]);
+				$data = $this->get($path, $page_query)['data'];
+				$data_all = array_merge($data_all, $data);
+			}
+
 		}
 
 		return $data_all;
@@ -147,6 +153,12 @@ class RunCloud
 	public function getTimeout(): int
 	{
 		return $this->timeout;
+	}
+
+
+	public function ping()
+	{
+		return $this->get("ping")['message'];
 	}
 
 
