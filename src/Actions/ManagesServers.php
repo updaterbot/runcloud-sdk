@@ -12,91 +12,6 @@ trait ManagesServers
 
 
 	/**
-	 * Get the collection of servers.
-	 *
-	 * @return Server[]
-	 *
-	 */
-	public function servers()
-	{
-		$data = $this->getAllData('servers');
-		return $this->transformCollection($data, Server::class);
-	}
-
-
-	/**
-	 * Get a server instance.
-	 *
-	 * @param  string $serverId
-	 * @return Server
-	 *
-	 */
-	public function server(string $serverId)
-	{
-		$data = $this->get("servers/$serverId");
-		return new Server($data, $this);
-	}
-
-
-	/**
-	 * Get server summary.
-	 *
-	 * @param  string $serverId
-	 * @return array
-	 *
-	 */
-	public function serverSummary(string $serverId)
-	{
-		return $this->get("servers/$serverId/show");
-	}
-
-
-	/**
-	 * Get server hardware.
-	 *
-	 * @param  string $serverId
-	 * @return array
-	 *
-	 */
-	public function serverHardware(string $serverId)
-	{
-		return $this->get("servers/$serverId/show/data");
-	}
-
-
-	/**
-	 * Get the server users.
-	 *
-	 * @param  string $serverId
-	 * @return ServerUser[]
-	 *
-	 */
-	public function sysUsers(string $serverId)
-	{
-		$extra = ['idServer' => $serverId];
-		$data = $this->getAllData("servers/$serverId/users");
-		return $this->transformCollection($data, ServerUser::class, $extra);
-	}
-
-
-	/**
-	 * Get a system user instance.
-	 *
-	 * @param  string $serverId
-	 * @param  string $userId
-	 * @return ServerUser
-	 *
-	 */
-	public function sysUser(string $serverId, string $userId)
-	{
-		$extra = ['idServer' => $serverId];
-		$data = $this->get("servers/$serverId/users/$userId");
-
-		return $this->transformItem($data, ServerUser::class, $extra);
-	}
-
-
-	/**
 	 * Create a new server.
 	 *
 	 * @param  array $data
@@ -104,183 +19,222 @@ trait ManagesServers
 	 * @return Server
 	 *
 	 */
-	public function createServer(array $data, string &$redirect='')
+	public function createServer(string $name, string $ipAddress, string $provider = '')
 	{
-		$data = $this->post('servers', $data);
+		$data = compact('name', 'ipAddress', 'provider');
+		$data = array_filter($data, 'strlen');
 
-		$redirect = $data['redirect'];
-		$server = new Server($data['server'], $this);
+		$server = $this->post('servers', $data);
 
-		return $server;
+		return new Server($server, $this);
 	}
 
 
 	/**
-	 * Delete the given server.
+	 * Get the collection of servers.
 	 *
-	 * @param  string $serverId
-	 * @param  bool $onlineServer (force delete online server)
-	 * @return string
-	 */
-	public function deleteServer(string $serverId, bool $onlineServer=false)
-	{
-		$data = [];
-		if ($onlineServer) {
-			$data = [
-				'typeYes' => 'YES',
-				'certifyToDeleteServer' => 'true',
-				'proceedToDeletion' => 'true',
-				'lastWarning' => 'true',
-			];
-		}
-
-		return $this->delete("servers/$serverId", $data)['message'];
-	}
-
-
-	/**
-	 * Create a new system user
-	 *
-	 * @param  string $serverId
-	 * @param  string $sysUserName
-	 * @param  string $password
-	 * @return string
+	 * @return Server[]
 	 *
 	 */
-	public function createSysUser(string $serverId, string $sysUserName, string $password)
+	public function servers(string $search = '')
 	{
-		$data = [
-			'username' => $sysUserName,
-			'password' => $password,
-			'verifyPassword' => $password,
-		];
+		$query = ['search' => $search];
+		$query = array_filter($query, 'strlen');
 
-		return $this->post("servers/$serverId/users", $data)['message'];
+		$response = $this->getAllData('servers', $query);
+		return $this->transformCollection($response, Server::class);
 	}
 
 
 	/**
-	 * Delete the given system user.
+	 * Get the collection of shared servers.
 	 *
-	 * @param  string $serverId
-	 * @param  string $sysUserId
-	 * @param  string $sysUserName
-	 * @return string
+	 * @return Server[]
 	 *
 	 */
-	public function deleteSysUser(string $serverId, string $sysUserId, string $sysUserName)
+	public function sharedServers(string $search = '')
 	{
-		$data = [
-			'username' => $sysUserName
-		];
+		$query = ['search' => $search];
+		$query = array_filter($query, 'strlen');
 
-		return $this->delete("servers/$serverId/users/$sysUserId", $data)['message'];
+		$response = $this->getAllData('servers/shared', $query);
+		return $this->transformCollection($response, Server::class);
 	}
 
 
 	/**
-	 * Change system user password.
+	 * Get a server instance.
 	 *
-	 * @param  string $serverId
-	 * @param  string $sysUserId
-	 * @param  string $password
+	 * @param  int $serverId
+	 * @return Server
+	 *
+	 */
+	public function server(int $serverId)
+	{
+		$response = $this->get("servers/$serverId");
+		return new Server($response, $this);
+	}
+
+
+	/**
+	 * Get a server installation script.
+	 *
+	 * @param  int $serverId
 	 * @return string
 	 *
 	 */
-	public function changePasswordSysUser(string $serverId, string $sysUserId, string $password)
+	public function installationScript(int $serverId)
 	{
-		 $data = [
-			'password' => $password,
-			'verifyPassword' => $password,
-		];
-
-		return $this->patch("servers/$serverId/users/$sysUserId", $data)['message'];
+		return $this->get("servers/$serverId/installationscript")['script'];
 	}
 
 
 	/**
-	 * Get the services.
+	 * Get server stats.
 	 *
-	 * @param  string $serverId
-	 * @return Service[]
+	 * @param  int $serverId
+	 * @return Server
 	 *
 	 */
-	public function services(string $serverId)
+	public function serverStats(int $serverId)
 	{
-		$extra = ['idServer' => $serverId];
-		$data = $this->get("servers/$serverId/services")['data'];
-		return $this->transformCollection($data, Service::class, $extra);
+		return $this->get("servers/$serverId/stats");
 	}
 
 
 	/**
-	 * Trigger systemctl commands: start, stop, restart, reload
+	 * Get server hardware info.
 	 *
-	 * @param  string $serverId
+	 * @param  int $serverId
+	 * @return Server
+	 *
+	 */
+	public function serverHardware(int $serverId)
+	{
+		return $this->get("servers/$serverId/hardwareinfo");
+	}
+
+
+	/**
+	 * Get server PHP versions
+	 *
+	 * @param  int $serverId
+	 * @return Server
+	 *
+	 */
+	public function serverPHPVersions(int $serverId)
+	{
+		return $this->get("servers/$serverId/php/version");
+	}
+
+
+	/**
+	 * Change PHP CLI version
+	 *
+	 * @param  int $serverId
+	 * @return Server
+	 *
+	 */
+	public function changeServerPHPVersion(int $serverId, string $phpVersion)
+	{
+		$data = compact('phpVersion');
+		$response = $this->patch("servers/$serverId/php/cli", $data);
+		return new Server($response, $this);
+	}
+
+
+	/**
+	 * Update metadata
+	 *
+	 * @param  int $serverId
+	 * @return Server
+	 *
+	 */
+	public function updateServerMetadata(int $serverId, string $name, string $provider = '')
+	{
+		$data = compact('name', 'provider');
+		$response = $this->patch("servers/$serverId/settings/meta", $data);
+		return new Server($response, $this);
+	}
+
+
+	/**
+	 * Get server SSH config
+	 *
+	 * @param  int $serverId
+	 * @return Server
+	 *
+	 */
+	public function serverSSHConfiguration(int $serverId)
+	{
+		return $this->get("servers/$serverId/settings/ssh");
+	}
+
+
+	/**
+	 * Update server SSH config
+	 *
+	 * @param  int $serverId
 	 * @param  array $data
-	 * @return string
+	 * @return Server
 	 *
 	 */
-	public function triggerService(string $serverId, array $data)
+	public function updateServerSSHConfiguration(int $serverId, array $data = [])
 	{
-		return $this->patch("servers/$serverId/services", $data)['message'];
+		return $this->patch("servers/$serverId/settings/ssh", $data);
 	}
 
 
 	/**
-	 * Trigger systemctl commands: start, stop, restart, reload
+	 * Update server autoupdate settings
 	 *
-	 * @param  string $serverId
-	 * @param  string $realName
-	 * @param  string $name
-	 * @return string
+	 * @param  int $serverId
+	 * @param  array $data
+	 * @return Server
 	 *
 	 */
-	public function startService(string $serverId, string $realName, string $name)
+	public function updateServerAutoupdate(int $serverId, array $data = [])
 	{
-		$data = [
-			'action' => 'start',
-			'realName' => $realName,
-			'name' => $name,
-		];
-
-		return $this->triggerService($serverId, $data);
+		return $this->patch("servers/$serverId/settings/autoupdate", $data);
 	}
 
 
-	public function stopService(string $serverId, string $realName, string $name)
+	/**
+	 * Delete server
+	 *
+	 * @param  int $serverId
+	 * @return Server
+	 *
+	 */
+	public function deleteServer(int $serverId)
 	{
-		$data = [
-			'action' => 'stop',
-			'realName' => $realName,
-			'name' => $name,
-		];
-
-		return $this->triggerService($serverId, $data);
+		return $this->delete("servers/$serverId");
 	}
 
 
-	public function restartService(string $serverId, string $realName, string $name)
+	/**
+	 * Get latest health
+	 *
+	 * @param  int $serverId
+	 * @return []
+	 *
+	 */
+	public function serverHealth(int $serverId)
 	{
-		$data = [
-			'action' => 'restart',
-			'realName' => $realName,
-			'name' => $name,
-		];
-
-		return $this->triggerService($serverId, $data);
+		return $this->get("servers/$serverId/health/latest");
 	}
 
 
-	public function reloadService(string $serverId, string $realName, string $name)
+	/**
+	 * Disk cleanup
+	 *
+	 * @param  int $serverId
+	 * @return bool
+	 *
+	 */
+	public function serverDiskCleanup(int $serverId)
 	{
-		$data = [
-			'action' => 'reload',
-			'realName' => $realName,
-			'name' => $name,
-		];
-
-		return $this->triggerService($serverId, $data);
+		return ($this->post("servers/$serverId/health/diskcleaner") == '');
 	}
 
 

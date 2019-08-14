@@ -17,7 +17,7 @@ trait MakesHttpRequests
 
 
 	/**
-	 * Make a GET request to Runcloud servers and return the response.
+	 * Make a GET request and return the response.
 	 *
 	 * @param  string $uri
 	 * @return mixed
@@ -30,7 +30,7 @@ trait MakesHttpRequests
 
 
 	/**
-	 * Make a POST request to Runcloud servers and return the response.
+	 * Make a POST request and return the response.
 	 *
 	 * @return mixed
 	 *
@@ -42,7 +42,7 @@ trait MakesHttpRequests
 
 
 	/**
-	 * Make a PUT request to Runcloud servers and return the response.
+	 * Make a PUT request and return the response.
 	 *
 	 * @return mixed
 	 *
@@ -54,7 +54,7 @@ trait MakesHttpRequests
 
 
 	/**
-	 * Make a PATCH request to Runcloud servers and return the response.
+	 * Make a PATCH request and return the response.
 	 *
 	 * @return mixed
 	 *
@@ -66,7 +66,7 @@ trait MakesHttpRequests
 
 
 	/**
-	 * Make a DELETE request to Runcloud servers and return the response.
+	 * Make a DELETE request and return the response.
 	 *
 	 * @return mixed
 	 *
@@ -78,7 +78,7 @@ trait MakesHttpRequests
 
 
 	/**
-	 * Make request to Runcloud servers and return the response.
+	 * Make request and return the response.
 	 *
 	 * @return mixed
 	 *

@@ -1,6 +1,6 @@
 # RunCloud API PHP SDK
 
-This SDK helps you perform API calls to the [RunCloud](https://runcloud.io) API and is a fork of the [RunCloud PHP SDK](https://github.com/16bitsrl/runcloud-php-sdk) to support the Version 2 API.
+This SDK helps you perform API calls to the [RunCloud](https://runcloud.io) Version 2 API and is a fork of the [RunCloud PHP SDK](https://github.com/16bitsrl/runcloud-php-sdk).
 
 ## Documentation
 

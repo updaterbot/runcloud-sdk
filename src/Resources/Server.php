@@ -7,17 +7,18 @@ class Server extends Resource
 {
 
 	public $id;
-	public $userId;
-	public $serverId;
-	public $serverName;
+	public $name;
+	public $provider;
 	public $ipAddress;
-	public $serverProvider;
+	public $os;
+	public $osVersion;
 	public $connected;
 	public $online;
-	public $createdAt;
-	public $createdAtHumanize;
 	public $agentVersion;
-	public $phpVersion;
-	public $autoUpdate;
+	public $phpCLIVersion;
+	public $softwareUpdate;
+	public $securityUpdate;
+	public $transferStatus;
+	public $createdAt;
 
 }
