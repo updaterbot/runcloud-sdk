@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2018 16bit Srl
+Copyright (c) 2019 Craig Rodway, 16bit Srl
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

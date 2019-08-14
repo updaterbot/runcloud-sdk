@@ -1,6 +1,6 @@
-# An SDK to easily work with the Runcloud API
+# An SDK to easily work with Version 2 of the RunCloud API.
 
-This SDK lets you perform API calls to [Runcloud](https://runcloud.io).
+This SDK lets you perform API calls to [RunCloud](https://runcloud.io) and is a fork of the [RunCloud PHP SDK](https://github.com/16bitsrl/runcloud-php-sdk) to support the Version 2 API.
 
 ## Documentation
 
@@ -8,13 +8,14 @@ No documentation is provided at the moment.
 
 ## Security
 
-If you discover any security related issues, please email [hello@16bit.it](mailto:hello@16bit.it) instead of using the issue tracker.
+If you discover any security related issues, please email [code@onhover.co.uk](mailto:code@onhover.co.uk) instead of using the issue tracker.
 
 ## Credits
 
+- [Mattia Trapani](https://github.com/zupolgec)
 - [Pier Trapani](https://github.com/piertrapani)
 
-This package uses code from and is greatly inspired by the [Forge SDK package](https://github.com/themsaid/forge-sdk) by [Mohammed Said](https://github.com/themsaid) and the [Oh Dear PHP SDK package](https://github.com/ohdearapp/ohdear-php-sdk). 
+This package uses code from and is greatly inspired by the [Forge SDK package](https://github.com/themsaid/forge-sdk) by [Mohammed Said](https://github.com/themsaid) and the [Oh Dear PHP SDK package](https://github.com/ohdearapp/ohdear-php-sdk).
 
 ## License
 
