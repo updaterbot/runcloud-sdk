@@ -1,6 +1,7 @@
 <?php
 
-namespace App\RuncloudApi\Resources;
+namespace OnHover\RunCloud\Resources;
+
 
 class Service extends Resource
 {
@@ -11,6 +12,6 @@ class Service extends Resource
 	public $CPU;
 	public $Running;
 	public $Version;
-    public $idServer;
-	
+	public $idServer;
+
 }

@@ -1,11 +1,12 @@
 <?php
 
-namespace App\RuncloudApi\Resources;
+namespace OnHover\RunCloud\Resources;
+
 
 class Log extends Resource
 {
 
-    public $id;
+	public $id;
 	public $type;
 	public $severity;
 	public $log;

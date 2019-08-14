@@ -1,6 +1,7 @@
 <?php
 
-namespace App\RuncloudApi\Resources;
+namespace OnHover\RunCloud\Resources;
+
 
 class Ssl extends Resource
 {
@@ -16,8 +17,8 @@ class Ssl extends Resource
 	public $authorizationMethod;
 	public $certificate;
 	public $privateKey;
-    public $staging;
-    public $idWebapp;
+	public $staging;
+	public $idWebapp;
 	public $idServer;
-	
+
 }

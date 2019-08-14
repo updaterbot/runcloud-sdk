@@ -1,14 +1,15 @@
 <?php
 
-namespace App\RuncloudApi\Resources;
+namespace OnHover\RunCloud\Resources;
+
 
 class ServerUser extends Resource
 {
 
-    public $id;
-    public $username;
-    public $deleteable;
-    public $sshPublic;
+	public $id;
+	public $username;
+	public $deleteable;
+	public $sshPublic;
 	public $idServer;
-    
+
 }

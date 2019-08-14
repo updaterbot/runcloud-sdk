@@ -1,6 +1,7 @@
 <?php
 
-namespace App\RuncloudApi\Resources;
+namespace OnHover\RunCloud\Resources;
+
 
 class Database extends Resource
 {
