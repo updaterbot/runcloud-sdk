@@ -11,7 +11,8 @@ class RunCloud
 
 	use MakesHttpRequests,
 		Actions\ManagesServers,
-		Actions\ManagesWebapps,
+		Actions\ManagesUsers,
+		Actions\ManagesWebApps,
 		Actions\ManagesDatabases,
 		Actions\ManagesAPIKeys,
 		Actions\ManagesStaticData;

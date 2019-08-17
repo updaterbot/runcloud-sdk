@@ -15,7 +15,6 @@ trait ManagesServers
 	 * Create a new server.
 	 *
 	 * @param  array $data
-	 * @param  string $redirect (return redirect for activation)
 	 * @return Server
 	 *
 	 */

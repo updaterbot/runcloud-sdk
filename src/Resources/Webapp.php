@@ -3,9 +3,8 @@
 namespace OnHover\RunCloud\Resources;
 
 
-class Webapp extends Resource
+class WebApp extends Resource
 {
-
 	public $id;
 	public $serverUserId;
 	public $serverUserUsername;
@@ -14,6 +13,7 @@ class Webapp extends Resource
 	public $publicPath;
 	public $phpVersion;
 	public $stack;
+	public $stackMode;
 	public $stackHumanize;
 	public $defaultServer;
 	public $restorationStatus;
@@ -21,6 +21,5 @@ class Webapp extends Resource
 	public $createdAtHumanize;
 	public $updatedAt;
 	public $updatedAtHumanize;
-	public $serverId;
 
 }
