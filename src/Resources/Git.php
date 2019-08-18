@@ -8,19 +8,14 @@ class Git extends Resource
 
 	public $id;
 	public $provider;
-	public $host;
-	public $user;
-	public $repository;
-	public $repositoryURL;
+	public $gitHost;
+	public $gitUser;
 	public $branch;
-	public $webhookURL;
+	public $repositoryData;
+	public $atomic;
+	public $atomicProjectId;
 	public $autoDeploy;
 	public $deployScript;
-	public $created_at;
-	public $created_at_humanize;
-	public $webhookHistories;
-	public $webhookErrors;
-	public $idWebapp;
-	public $idServer;
+	public $createdAt;
 
 }

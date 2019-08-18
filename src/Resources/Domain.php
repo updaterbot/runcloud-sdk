@@ -8,7 +8,6 @@ class Domain extends Resource
 
 	public $id;
 	public $name;
-	public $idWebapp;
-	public $idServer;
+	public $createdAt;
 
 }
