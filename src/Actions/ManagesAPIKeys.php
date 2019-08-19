@@ -17,7 +17,7 @@ trait ManagesAPIKeys
 	 * @return APIKey[]
 	 *
 	 */
-	public function getAPIKeys(string $search = '')
+	public function APIKeys(string $search = '')
 	{
 		$data = $this->getAllData("settings/externalapi", ['search' => $search]);
 		return $this->transformCollection($data, APIKey::class);
