@@ -7,7 +7,7 @@ class DatabaseUser extends Resource
 {
 
 	public $id;
-	public $name;
-	public $idServer;
+	public $username;
+	public $createdAt;
 
 }

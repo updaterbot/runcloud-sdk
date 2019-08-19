@@ -11,199 +11,197 @@ trait ManagesDatabases
 
 
 	/**
-	 * Get the collection of Databases.
+	 * Create a new database
+	 *
+	 * @param  int $serverId
+	 * @param  string $name
+	 * @param  string $collation
+	 * @return Database
+	 *
+	 */
+	public function createDatabase(string $serverId, string $name, string $collation = '')
+	{
+		$data = compact('name', 'collation');
+		$data = array_filter($data, 'strlen');
+
+		$database = $this->post("servers/{$serverId}/databases", $data);
+		return new Database($database, $this);
+	}
+
+
+	/**
+	 * Get the collection of databases
+	 *
+	 * @param  int $serverId
 	 *
 	 * @return Database[]
 	 *
 	 */
-	public function databases(string $serverId)
+	public function databases(int $serverId)
 	{
-		$data = $this->getAllData("servers/$serverId/databases");
-		return $this->transformCollection($data, Database::class);
+		$response = $this->getAllData("servers/{$serverId}/databases");
+		return $this->transformCollection($response, Database::class);
 	}
 
 
 	/**
-	 * Get a Database instance.
+	 * Get a database
 	 *
-	 * @param  string $serverId
-	 * @param  string $databaseId
+	 * @param  int $serverId
+	 * @param  int $databaseId
 	 * @return Database
 	 *
 	 */
-	public function database(string $serverId, string $databaseId)
+	public function database(int $serverId, int $databaseId)
 	{
-		$data = $this->get("servers/$serverId/databases/$databaseId");
-		return new Database($data, $this);
+		$db = $this->get("servers/{$serverId}/databases/{$databaseId}");
+		return new Database($db, $this);
 	}
 
 
 	/**
-	 * Get the database users.
+	 * Delete a database
 	 *
-	 * @param  string $serverId
+	 * @param  int $serverId
+	 * @param  int $databaseId
+	 * @param  bool $alsoDeleteUsers
+	 * @return Database
+	 *
+	 */
+	public function deleteDatabase(int $serverId, int $databaseId, bool $alsoDeleteUsers = false)
+	{
+		$data = [];
+
+		if ($alsoDeleteUsers === true) {
+			$data['deleteUser'] = true;
+		}
+
+		$db = $this->delete("servers/{$serverId}/databases/{$databaseId}", $data);
+		return new Database($db, $this);
+	}
+
+
+	/**
+	 * Create a database user
+	 *
+	 * @param  int $serverId
+	 * @param  string $username
+	 * @param  string $password
+	 * @return Database
+	 *
+	 */
+	public function createDatabaseUser(string $serverId, string $username, string $password)
+	{
+		$data = compact('username', 'password');
+
+		$dbUser = $this->post("servers/{$serverId}/databaseusers", $data);
+		return new DatabaseUser($dbUser, $this);
+	}
+
+
+	/**
+	 * Get the collection of database users.
+	 * Optionally supply Database ID to show users granted access to that database.
+	 * Optionally supply a search string.
+	 *
+	 * @param int $serverId
+	 * @param int $databaseId
+	 * @param string $search
 	 * @return DatabaseUser[]
 	 *
 	 */
-	public function databaseUsers($serverId)
+	public function databaseUsers(int $serverId, int $databaseId = null, string $search = '')
 	{
-		$extra = ['idServer' => $serverId];
-		$data = $this->getAllData("servers/$serverId/databaseusers");
+		$query = ['search' => $search];
+		$query = array_filter($query, 'strlen');
 
-		return $this->transformCollection($data, DatabaseUser::class, $extra);
+		if ($databaseId === null) {
+			$response = $this->getAllData("servers/{$serverId}/databaseusers", $query);
+		} else {
+			$response = $this->getAllData("servers/{$serverId}/databases/{$databaseId}/grant", $query);
+		}
+
+		return $this->transformCollection($response, DatabaseUser::class);
 	}
 
 
 	/**
-	 * Get a database user instance.
+	 * Get a database user
 	 *
-	 * @param  string $serverId
-	 * @param  string $dbuserId
+	 * @param  int $serverId
+	 * @param  int $databaseUserId
 	 * @return DatabaseUser
 	 *
 	 */
-	public function databaseUser(string $serverId, string $dbuserId)
+	public function databaseUser(int $serverId, int $databaseUserId)
 	{
-		$extra = ['idServer' => $serverId];
-		$data = $this->get("servers/$serverId/databaseusers/$dbuserId");
-
-		return $this->transformItem($data, DatabaseUser::class, $extra);
+		$dbUser = $this->get("servers/{$serverId}/databaseusers/{$databaseUserId}");
+		return new DatabaseUser($dbUser, $this);
 	}
 
 
 	/**
-	 * Create a new database.
+	 * Change database user password
 	 *
-	 * @param  string $serverId
-	 * @param  string $name
-	 * @param  string $collation
-	 * @return string
+	 * @param  int $serverId
+	 * @param  int $databaseUserId
+	 * @return DatabaseUser
 	 *
 	 */
-	public function createDatabase(string $serverId, string $name, string $collation='')
+	public function changeDatabaseUserPassword(int $serverId, int $databaseUserId, string $password)
 	{
-		$data = [
-			'databaseName' => $name,
-			'databaseCollation' => $collation,
-		];
-
-		return $this->post("servers/$serverId/databases", $data)['message'];
+		$data = compact('password');
+		$dbUser = $this->patch("servers/{$serverId}/databaseusers/{$databaseUserId}", $data);
+		return new DatabaseUser($dbUser, $this);
 	}
 
 
 	/**
-	 * Delete the given database.
+	 * Delete database user
 	 *
-	 * @param  string $serverId
-	 * @param  string $databaseId
-	 * @param  string $databaseName
-	 * @return string
+	 * @param  int $serverId
+	 * @param  int $databaseUserId
+	 * @return DatabaseUser
 	 *
 	 */
-	public function deleteDatabase(string $serverId, string $databaseId, string $databaseName)
+	public function deleteDatabaseUser(int $serverId, int $databaseUserId)
 	{
-		$data = [
-			'databaseName' => $databaseName,
-		];
-
-		return $this->delete("servers/$serverId/databases/$databaseId", $data)['message'];
+		$dbUser = $this->delete("servers/{$serverId}/databaseusers/{$databaseUserId}");
+		return new DatabaseUser($dbUser, $this);
 	}
 
 
 	/**
-	 * Create a new database user.
+	 * Attach database user to database
 	 *
-	 * @param  string $serverId
-	 * @param  string $dbUserName
-	 * @param  string $password
-	 * @return string
+	 * @param  int $serverId
+	 * @param  int $databaseId
+	 * @param  int $databaseUserId
+	 * @return DatabaseUser
 	 *
 	 */
-	public function createDbUser(string $serverId, string $dbUserName, string $password)
+	public function attachDatabaseUser(int $serverId, int $databaseId, int $databaseUserId)
 	{
-		$data = [
-			'databaseUser' => $dbUserName,
-			'password' => $password,
-			'verifyPassword' => $password,
-		];
-
-		return $this->post("servers/$serverId/databaseusers", $data)['message'];
+		$data = ['id' => $databaseUserId];
+		$dbUser = $this->post("servers/{$serverId}/databases/{$databaseId}/grant", $data);
+		return new DatabaseUser($dbUser, $this);
 	}
 
 
 	/**
-	 * Delete the given database user.
+	 * Revoke database user from database
 	 *
-	 * @param  string $serverId
-	 * @param  string $dbUserId
-	 * @param  string $dbUserName
-	 * @return string
-	 *
-	 */
-	public function deleteDbUser(string $serverId, string $dbUserId, string $dbUserName)
-	{
-		$data = [
-			'databaseUser' => $dbUserName
-		];
-
-		return $this->delete("servers/$serverId/databaseusers/$dbUserId", $data)['message'];
-	}
-
-
-	/**
-	 * Change database user password.
-	 *
-	 * @param  string $serverId
-	 * @param  string $dbUserId
-	 * @param  string $password
-	 * @return string
+	 * @param  int $serverId
+	 * @param  int $databaseId
+	 * @param  int $databaseUserId
+	 * @return DatabaseUser
 	 *
 	 */
-	public function changePasswordDbUser(string $serverId, string $dbUserId, string $password)
+	public function revokeDatabaseUser(int $serverId, int $databaseId, int $databaseUserId)
 	{
-		 $data = [
-			'password' => $password,
-			'verifyPassword' => $password,
-		];
-
-		return $this->patch("servers/$serverId/databaseusers/$dbUserId", $data)['message'];
-	}
-
-
-	/**
-	 * Attach database user to a database.
-	 *
-	 * @param  string $serverId
-	 * @param  string $databaseId
-	 * @param  string $dbUserName
-	 * @return string
-	 *
-	 */
-	public function attachDbUser(string $serverId, string $databaseId, string $dbUserName)
-	{
-		$data = [
-			'databaseUser' => $dbUserName,
-		];
-
-		return $this->post("servers/$serverId/databases/$databaseId/attachuser", $data)['message'];
-	}
-
- 	/**
-	 * Revoke database user from database.
-	 *
-	 * @param  string $serverId
-	 * @param  string $databaseId
-	 * @param  string $dbUserName
-	 * @return string
-	 *
-	 */
-	public function revokeDbUser(string $serverId, string $databaseId, string $dbUserName)
-	{
-		$data = [
-			'databaseUser' => $dbUserName,
-		];
-
-		return $this->delete("servers/$serverId/databases/$databaseId/attachuser", $data)['message'];
+		$data = ['id' => $databaseUserId];
+		$dbUser = $this->delete("servers/{$serverId}/databases/{$databaseId}/grant", $data);
+		return new DatabaseUser($dbUser, $this);
 	}
 
 
