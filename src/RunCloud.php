@@ -15,6 +15,7 @@ class RunCloud
 		Actions\ManagesWebApps,
 		Actions\ManagesDatabases,
 		Actions\ManagesAPIKeys,
+		Actions\ManagesSSHKeys,
 		Actions\ManagesStaticData;
 
 
