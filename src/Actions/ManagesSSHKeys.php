@@ -47,13 +47,13 @@ trait ManagesSSHKeys
 	 *
 	 * @param  int $serverId
 	 * @param  int $sshKeyId
-	 * @return SSHKey[]
+	 * @return SSHKey
 	 *
 	 */
 	public function SSHKey(int $serverId, int $sshKeyId)
 	{
 		$sshKey = $this->get("servers/{$serverId}/sshcredentials/{$sshKeyId}");
-		return new SSHKey($sshKey);
+		return new SSHKey($sshKey, $this);
 	}
 
 
@@ -62,13 +62,13 @@ trait ManagesSSHKeys
 	 *
 	 * @param  int $serverId
 	 * @param  int $sshKeyId
-	 * @return SSHKey[]
+	 * @return SSHKey
 	 *
 	 */
 	public function deleteSSHKey(int $serverId, int $sshKeyId)
 	{
 		$sshKey = $this->delete("servers/{$serverId}/sshcredentials/{$sshKeyId}");
-		return new SSHKey($sshKey);
+		return new SSHKey($sshKey, $this);
 	}
 
 
