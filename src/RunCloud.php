@@ -57,9 +57,6 @@ class RunCloud
 	public $timeout = 30;
 
 
-	public $container;
-
-
 	/**
 	 * Create a new RunCloud instance.
 	 *
