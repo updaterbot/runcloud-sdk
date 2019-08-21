@@ -1,24 +1,29 @@
 {
-  "name": "16bit/runcloud-php-sdk",
-  "description": "Runcloud PHP SDK (Unofficial)",
-  "keywords": ["runcloud", "api", "sdk"],
-  "homepage": "",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Pier Trapani",
-      "email": "hello@16bit.it",
-      "role": "Developer"
-    }
-  ],
-  "require": {
-    "php": "^7.0",
-    "guzzlehttp/guzzle": "~6.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "SediciBit\\RuncloudApi\\": "src/"
-    }
-  },
-  "prefer-stable": true
+	"name": "onhover/runcloud-sdk",
+	"description": "RunCloud PHP SDK (Unofficial)",
+	"keywords": ["runcloud", "api", "sdk"],
+	"homepage": "",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Pier Trapani",
+			"email": "hello@16bit.it",
+			"role": "Developer"
+		},
+		{
+			"name": "Craig Rodway",
+			"email": "code@onhover.co.uk",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": "^7.0",
+		"guzzlehttp/guzzle": "~6.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"OnHover\\RunCloud\\": "src/"
+		}
+	},
+	"prefer-stable": true
 }

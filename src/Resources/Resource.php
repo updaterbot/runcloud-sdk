@@ -1,69 +1,83 @@
 <?php
 
-namespace App\RuncloudApi\Resources;
+namespace OnHover\RunCloud\Resources;
 
-use App\RuncloudApi\Runcloud;
+use OnHover\RunCloud\RunCloud;
+
 
 class Resource
 {
-    /**
-     * The resource attributes.
-     *
-     * @var array
-     */
-    public $attributes;
 
-    /**
-     * The Runcloud instance.
-     *
-     * @var Runcloud
-     */
-    protected $runcloud;
 
-    /**
-     * Create a new resource instance.
-     *
-     * @param  array $attributes
-     * @param  Runcloud $runcloud
-     * @return void
-     */
-    public function __construct(array $attributes, $runcloud = null)
-    {
-        $this->attributes = $attributes;
-        $this->runcloud = $runcloud;
+	/**
+	 * The resource attributes.
+	 *
+	 * @var array
+	 *
+	 */
+	public $attributes;
 
-        $this->fill();
-    }
 
-    /**
-     * Fill the resource with the array of attributes.
-     *
-     * @return void
-     */
-    private function fill()
-    {
-        foreach ($this->attributes as $key => $value) {
-            $key = $this->camelCase($key);
+	/**
+	 * The Runcloud instance.
+	 *
+	 * @var Runcloud
+	 *
+	 */
+	protected $runcloud;
 
-            $this->{$key} = $value;
-        }
-    }
 
-    /**
-     * Convert the key name to camel case.
-     *
-     * @param $key
-     */
-    private function camelCase($key)
-    {
-        $parts = explode('_', $key);
+	/**
+	 * Create a new resource instance.
+	 *
+	 * @param  array $attributes
+	 * @param  Runcloud $runcloud
+	 * @return void
+	 *
+	 */
+	public function __construct(array $attributes, $runcloud = null)
+	{
+		$this->attributes = $attributes;
+		$this->runcloud = $runcloud;
 
-        foreach ($parts as $i => $part) {
-            if ($i !== 0) {
-                $parts[$i] = ucfirst($part);
-            }
-        }
+		$this->fill();
+	}
 
-        return str_replace(' ', '', implode(' ', $parts));
-    }
+
+	/**
+	 * Fill the resource with the array of attributes.
+	 *
+	 * @return void
+	 *
+	 */
+	private function fill()
+	{
+		foreach ($this->attributes as $key => $value) {
+			$key = $this->camelCase($key);
+
+			$this->{$key} = $value;
+		}
+	}
+
+
+	/**
+	 * Convert the key name to camel case.
+	 *
+	 * @param $key
+	 *
+	 */
+	private function camelCase($key)
+	{
+		$parts = explode('_', $key);
+
+		foreach ($parts as $i => $part) {
+			if ($i !== 0) {
+				$parts[$i] = ucfirst($part);
+			}
+		}
+
+		return str_replace(' ', '', implode(' ', $parts));
+	}
+
+
 }

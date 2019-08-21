@@ -1,17 +1,24 @@
 <?php
-namespace App\RuncloudApi\Exceptions;
+
+namespace OnHover\RunCloud\Exceptions;
 
 use Exception;
 
+
 class TooManyRequestsException extends Exception
 {
-    /**
-     * Create a new exception instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct('Too many requests. You have exceeded our rate limits.');
-    }
+
+
+	/**
+	 * Create a new exception instance.
+	 *
+	 * @return void
+	 *
+	 */
+	public function __construct()
+	{
+		parent::__construct('Too many requests. You have exceeded our rate limits.');
+	}
+
+
 }

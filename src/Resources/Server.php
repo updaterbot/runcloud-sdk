@@ -1,29 +1,24 @@
 <?php
 
-namespace App\RuncloudApi\Resources;
+namespace OnHover\RunCloud\Resources;
+
 
 class Server extends Resource
 {
 
+	public $id;
+	public $name;
+	public $provider;
+	public $ipAddress;
+	public $os;
+	public $osVersion;
+	public $connected;
+	public $online;
+	public $agentVersion;
+	public $phpCLIVersion;
+	public $softwareUpdate;
+	public $securityUpdate;
+	public $transferStatus;
+	public $createdAt;
 
-    /**
-     * The id of the server.
-     *
-     * @var string
-     */
-    public $id;
-    public $userId;
-    public $serverId;
-    public $serverName;
-    public $ipAddress;
-    public $serverProvider;
-    public $connected;
-    public $online;
-    public $createdAt;
-    public $createdAtHumanize;
-    public $agentVersion;
-    public $phpVersion;
-    public $autoUpdate;
-
- 
 }

@@ -1,17 +1,24 @@
 <?php
-namespace App\RuncloudApi\Exceptions;
+
+namespace OnHover\RunCloud\Exceptions;
 
 use Exception;
 
+
 class ContentTypeNotManagedException extends Exception
 {
-    /**
-     * Create a new exception instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct('Content type not managed.');
-    }
+
+
+	/**
+	 * Create a new exception instance.
+	 *
+	 * @return void
+	 *
+	 */
+	public function __construct()
+	{
+		parent::__construct('Content type not managed.');
+	}
+
+
 }

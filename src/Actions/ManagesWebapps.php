@@ -1,433 +1,466 @@
 <?php
 
-namespace App\RuncloudApi\Actions;
+namespace OnHover\RunCloud\Actions;
 
-use App\RuncloudApi\Resources\Webapp;
-use App\RuncloudApi\Resources\Domain;
-use App\RuncloudApi\Resources\Log;
-use App\RuncloudApi\Resources\Ssl;
+use OnHover\RunCloud\Resources\WebApp;
+use OnHover\RunCloud\Resources\Git;
+use OnHover\RunCloud\Resources\Script;
+use OnHover\RunCloud\Resources\Domain;
+use OnHover\RunCloud\Resources\SSL;
+use OnHover\RunCloud\Resources\Log;
 
-trait ManagesWebapps
+
+trait ManagesWebApps
 {
-    /**
-     * Get the collection of webapps on the server
-     *
-     * @param  string $serverId
-     * @return Webapp[]
-     */
-    public function webapps(string $serverId)
-    {
-        $data = $this->getAllData("servers/$serverId/webapps");
-
-        return $this->transformCollection($data, Webapp::class);
-    }
-
-    /**
-     * Get a webapp instance.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @return Webapp
-     */
-    public function webapp(string $serverId, string $webappId)
-    {
-        $data = $this->get("servers/$serverId/webapps/$webappId");
-
-        return new Webapp($data, $this);
-    }
-
-   // Create and delete a webapp
-    /**
-     * Create a new webapp.
-     *
-     * @param  string $serverId
-     * @param  array $data
-     * @return string
-     */
-    public function createWebapp(string $serverId, array $data)
-    {
-        // $result = $this->post("servers/$serverId/webapps", $data);
-        // if (is_object($result)) {
-        //     return $result['message'];
-        // } else {
-        //     return 'Check data: webapp not created';
-        // }
-
-        return $this->post("servers/$serverId/webapps", $data)['message'];
-    }
-
-    /**
-     * Delete the given webapp.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  string $webappName
-     * @return string
-     */
-    public function deleteWebapp(string $serverId, string $webappId, string $webappName)
-    {
-        $data = [
-            'webApplicationName' => $webappName,
-        ];
-        
-        return $this->delete("servers/$serverId/webapps/$webappId", $data)['message'];
-    }
-
-     /**
-     * Set webapp as default.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @return string
-     */
-    public function setWebappDefault(string $serverId, string $webappId)
-    {
-        return $this->post("servers/$serverId/webapps/$webappId/default")['message'];
-    }
-
-    /**
-     * Remove webapp default.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @return string
-     */
-    public function unsetWebappDefault(string $serverId, string $webappId)
-    {
-        return $this->delete("servers/$serverId/webapps/$webappId/default")['message'];
-    }
-
-   /**
-     * Rebuild webapp.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @return string
-     */
-    public function rebuildWebapp(string $serverId, string $webappId)
-    {
-
-        return $this->patch("servers/$serverId/webapps/$webappId/rebuild")['message'];
-    }
 
 
-    // Domains
-     /**
-     * Get the domains.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @return Domain
-     */
-    public function domains(string $serverId, string $webappId)
-    {
-        $extra = ['idServer' => $serverId, 'idWebapp' => $webappId];
-        $data = $this->get("servers/$serverId/webapps/$webappId/domainname")['data'];
-
-        return $this->transformCollection($data, Domain::class, $extra);
-    }
-
-    /**
-     * Add domain to a webapp.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @return string
-     */
-    public function addDomain(string $serverId, string $webappId, string $domainName)
-    {
-        $data = [
-            'domainName' => $domainName,
-        ];
-
-        return $this->post("servers/$serverId/webapps/$webappId/domainname", $data);
-    }
-
-    /**
-     * Delete the domain from the webapp.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  string $domainId
-     * @return string
-     */
-    public function deleteDomain(string $serverId, string $webappId, string $domainId)
-    {
-        return $this->delete("servers/$serverId/webapps/$webappId/domainname/$domainId")['message'];
-    }
-
-    // GIT
-    /**
-     * Get Git.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @return array
-     */
-    public function webappGit(string $serverId, string $webappId)
-    {
-        $extra = ['idServer' => $serverId, 'idWebapp' => $webappId];
-
-        return $this->get("servers/$serverId/webapps/$webappId/git");
-
-        // $data = $this->get("servers/$serverId/webapps/$webappId/git")['git'];
-        
-        // return $this->transformItem($data, Git::class, $extra);
-    }
-
-     /**
-     * Clone Git repository.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  array $data
-     * @param  string $message (return message)
-     * @return Git
-     */
-    public function webappGitClone(string $serverId, string $webappId, array $data, string &$message='')
-    {
-        $extra = ['idServer' => $serverId, 'idWebapp' => $webappId];
-        $data_all = $this->post("servers/$serverId/webapps/$webappId/git", $data);
-        $message = $data_all['message'];
-
-        return $this->transformItem($data_all['git'], Git::class, $extra);
-    }
-
-    /**
-     * Git change branch.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  string $gitId
-     * @param  string $branch
-     * @return string
-     */
-    public function webappGitChangeBranch(string $serverId, string $webappId, string $gitId, string $branch)
-    {
-        $data = ['branch' => $branch];
-
-        return $this->patch("servers/$serverId/webapps/$webappId/git/$gitId/branch", $data)['message'];
-    }
-
-    /**
-     * Git customize deploymnet.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  string $gitId
-     * @param  array $data
-     * @return string
-     */
-    public function webappGitCustomDeployment(string $serverId, string $webappId, string $gitId, array $data)
-    {
-
-        return $this->patch("servers/$serverId/webapps/$webappId/git/$gitId/script", $data)['message'];
-    }
-
-    /**
-     * Git force deploy.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  string $gitId
-     * @return string
-     */
-    public function webappGitForceDeploy(string $serverId, string $webappId, string $gitId)
-    {
-
-        return $this->put("servers/$serverId/webapps/$webappId/git/$gitId/script")['message'];
-    }
+	/**
+	 * Create a new web application.
+	 *
+	 * @param  int $serverId
+	 * @param  array $data
+	 * @return Server
+	 *
+	 */
+	public function createWebApp(int $serverId, array $data = [])
+	{
+		$webapp = $this->post("servers/{$serverId}/webapps/custom", $data);
+		return new WebApp($webapp, $this);
+	}
 
 
-    /**
-     * Delete Git repository.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  string $gitId
-     * @param  string $repository
-     * @return string
-     */
-    public function deleteWebAppGit(string $serverId, string $webappId, string $gitId, string $repository)
-    {
-        $data = ['repository' => $repository];
+	/**
+	 * Get the collection of web applications.
+	 *
+	 * @param int $serverId
+	 * @return WebApp[]
+	 *
+	 */
+	public function webApps(int $serverId, string $search = '')
+	{
+		$query = ['search' => $search];
+		$query = array_filter($query, 'strlen');
 
-        return $this->delete("servers/$serverId/webapps/$webappId/git/$gitId", $data)['message'];
-    }
-
-    // Scripts
-    /**
-     * Get Script installer.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @return array
-     */
-    public function webappScriptInstaller(string $serverId, string $webappId)
-    {
-        return $this->get("servers/$serverId/webapps/$webappId/installer");
-    }
-
-    /**
-     * Install Script.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  string $scriptName
-     * @return string
-     */
-    public function installWebAppScript(string $serverId, string $webappId, string $scriptName)
-    {
-        $data = ['scriptName' => $scriptName];
-
-        return $this->post("servers/$serverId/webapps/$webappId/installer", $data)['message'];
-    }
-
-    /**
-     * Delete Script.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  string $scriptId
-     * @return string
-     */
-    public function deleteWebAppScript(string $serverId, string $webappId, string $scriptId)
-    {
-        $data = ['typeYes' => 'YES'];
-
-        return $this->delete("servers/$serverId/webapps/$webappId/installer", $data)['message'];
-    }
-
-    //SSL
-     /**
-     * Get SSL.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @return Ssl[]
-     */
-    public function webappSsl(string $serverId, string $webappId)
-    {
-        $extra = ['idServer' => $serverId, 'idWebapp' => $webappId];
-        $data = $this->get("servers/$serverId/webapps/$webappId/ssl");
-
-        return $this->transformItem($data, Ssl::class, $extra);
-    }
-
-     /**
-     * Install SSL.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  array $data
-     * @param  string $message (return message)
-     * @return Ssl
-     */
-    public function installSsl(string $serverId, string $webappId, array $data, string &$message='')
-    {
-        $data_all = $this->post("servers/$serverId/webapps/$webappId/ssl", $data);
-
-        $message = $data_all['message'];
-        $ssl = new Ssl($data_all['ssl'], $this);
-
-        return $ssl;
-    }
-
-     /**
-     * Redeploy SSL. (Let’s Encrypt only)
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @return string
-     */
-    public function redeploySsl(string $serverId, string $webappId)
-    {
-        return $this->patch("servers/$serverId/webapps/$webappId/ssl")['message'];
-    }
-
-    /**
-     * Update SSL config.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  string $sslId
-     * @param  array $data
-     * @return string
-     */
-    public function updateSsl(string $serverId, string $webappId, string $sslId, array $data)
-    {
-        return $this->patch("servers/$serverId/webapps/$webappId/ssl/$sslId", $data)['message'];
-    }
-
-        /**
-     * Delete SSL.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  string $sslId
-     * @return string
-     */
-    public function deleteSsl(string $serverId, string $webappId, string $sslId)
-    {
-        return $this->delete("servers/$serverId/webapps/$webappId/ssl/$sslId")['message'];
-    }
-
-    // Settings
-    /**
-     * Get settings of webapps (not documented)
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @return array
-     */
-    public function webappSettings(string $serverId, string $webappId)
-    {
-        return $this->get("servers/$serverId/webapps/$webappId/settings");
-    }
-
-    /**
-     * Change webapp settings: PHP version.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  string $phpVer
-     * @return string
-     */
-    public function setWebappPhpVer(string $serverId, string $webappId, string $phpVer)
-    {
-        $data = ['phpVersion' => $phpVer];
-
-        return $this->patch("servers/$serverId/webapps/$webappId/settings/phpversion", $data)['message'];
-    }
+		$response = $this->getAllData("servers/{$serverId}/webapps", $query);
+		return $this->transformCollection($response, WebApp::class);
+	}
 
 
-    /**
-     * Change webapp settings: PHP-FPM, NGiNX.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @param  array $data
-     * @return string
-     */
-    public function setWebappPhpFrmNginx(string $serverId, string $webappId, array $data)
-    {
-        return $this->patch("servers/$serverId/webapps/$webappId/settings/phpfpmnginx", $data)['message'];
-    }
+	/**
+	 * Get a webapp.
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @return WebApp
+	 *
+	 */
+	public function webApp(int $serverId, int $webAppId)
+	{
+		$webapp = $this->get("servers/{$serverId}/webapps/{$webAppId}");
+		return new WebApp($webapp, $this);
+	}
 
-    // Log
-    /**
-     * Get the webapp log.
-     *
-     * @param  string $serverId
-     * @param  string $webappId
-     * @return Log[]
-     */
-    public function webappLog(string $serverId, string $webappId)
-    {
-        $extra = ['idServer' => $serverId, 'idWebapp' => $webappId];
-        $data = $this->getAllData("servers/$serverId/webapps/$webappId/log");
 
-        return $this->transformCollection($data, Log::class, $extra);
-    }
+	/**
+	 * Set Default Application
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @return WebApp
+	 *
+	 */
+	public function setDefaultWebApp(int $serverId, int $webAppId)
+	{
+		$webapp = $this->post("servers/{$serverId}/webapps/{$webAppId}/default");
+		return new WebApp($webapp, $this);
+	}
+
+
+	/**
+	 * Remove Default Application
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @return WebApp
+	 *
+	 */
+	public function unsetDefaultWebApp(int $serverId, int $webAppId)
+	{
+		$webapp = $this->delete("servers/{$serverId}/webapps/{$webAppId}/default");
+		return new WebApp($webapp, $this);
+	}
+
+
+	/**
+	 * Rebuild web application
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @return WebApp
+	 *
+	 */
+	public function rebuildWebApp(int $serverId, int $webAppId)
+	{
+		$webapp = $this->post("servers/{$serverId}/webapps/{$webAppId}/rebuild");
+		return new WebApp($webapp, $this);
+	}
+
+
+	/**
+	 * Clone Git repository
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  array $data
+	 * @return Git
+	 *
+	 */
+	public function cloneGitRepo(int $serverId, int $webAppId, array $data)
+	{
+		$git = $this->post("servers/{$serverId}/webapps/{$webAppId}/git", $data);
+		return new Git($git, $this);
+	}
+
+
+	/**
+	 * Get Git details for web application
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @return Git
+	 *
+	 */
+	public function git(int $serverId, int $webAppId)
+	{
+		$git = $this->get("servers/{$serverId}/webapps/{$webAppId}/git");
+		return new Git($git, $this);
+	}
+
+
+	/**
+	 * Change Git branch
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  int $gitId
+	 * @param  string $branch
+	 * @return Git
+	 *
+	 */
+	public function gitBranch(int $serverId, int $webAppId, int $gitId, string $branch)
+	{
+		$data = ['branch' => $branch];
+		$git = $this->patch("servers/{$serverId}/webapps/{$webAppId}/git/{$gitId}/branch", $data);
+		return new Git($git, $this);
+	}
+
+
+	/**
+	 * Git deployment script
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  int $gitId
+	 * @param  array $data
+	 * @return Git
+	 *
+	 */
+	public function gitDeployScript(int $serverId, int $webAppId, int $gitId, array $data)
+	{
+		$git = $this->patch("servers/{$serverId}/webapps/{$webAppId}/git/{$gitId}/script", $data);
+		return new Git($git, $this);
+	}
+
+
+	/**
+	 * Git Force Deploy
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  int $gitId
+	 * @return string
+	 *
+	 */
+	public function forceGitDeploy(int $serverId, int $webAppId, int $gitId)
+	{
+		$response = $this->put("servers/{$serverId}/webapps/{$webAppId}/git/{$gitId}/script");
+		return $response;
+	}
+
+
+	/**
+	 * Remove Git
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  int $gitId
+	 * @return Git
+	 *
+	 */
+	public function removeGit(int $serverId, int $webAppId, int $gitId)
+	{
+		$git = $this->delete("servers/{$serverId}/webapps/{$webAppId}/git/{$gitId}");
+		return new Git($git, $this);
+	}
+
+
+	/**
+	 * Install PHP Script
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  string $name
+	 * @return Script
+	 *
+	 */
+	public function installScript(int $serverId, int $webAppId, string $name)
+	{
+		$data = ['name' => $name];
+		$script = $this->post("servers/{$serverId}/webapps/{$webAppId}/installer", $data);
+		return new Script($script, $this);
+	}
+
+
+	/**
+	 * Get Script
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @return Script
+	 *
+	 */
+	public function script(int $serverId, int $webAppId)
+	{
+		$script = $this->get("servers/{$serverId}/webapps/{$webAppId}/installer");
+		return new Script($script, $this);
+	}
+
+
+	/**
+	 * Remove Script
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  int $scriptId
+	 * @return Script
+	 *
+	 */
+	public function removeScript(int $serverId, int $webAppId, int $scriptId)
+	{
+		$script = $this->delete("servers/{$serverId}/webapps/{$webAppId}/installer/{$scriptId}");
+		return new Script($script, $this);
+	}
+
+
+	/**
+	 * Add domain name
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  string $name
+	 * @return Domain
+	 *
+	 */
+	public function addDomain(int $serverId, int $webAppId, string $name)
+	{
+		$data = ['name' => $name];
+		$domain = $this->post("servers/{$serverId}/webapps/{$webAppId}/domains", $data);
+		return new Domain($domain, $this);
+	}
+
+
+	/**
+	 * List domains
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @return Domain[]
+	 *
+	 */
+	public function domains(int $serverId, int $webAppId)
+	{
+		$response = $this->getAllData("servers/{$serverId}/webapps/{$webAppId}/domains");
+		return $this->transformCollection($response, Domain::class);
+	}
+
+
+	/**
+	 * Delete domain
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  int $domainId
+	 * @return Domain
+	 *
+	 */
+	public function deleteDomain(int $serverId, int $webAppId, int $domainId)
+	{
+		$domain = $this->delete("servers/{$serverId}/webapps/{$webAppId}/domains/{$domainId}");
+		return new Domain($domain, $this);
+	}
+
+
+	/**
+	 * Install SSL
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  array $data
+	 * @return SSL
+	 *
+	 */
+	public function installSSL(int $serverId, int $webAppId, array $data)
+	{
+		$ssl = $this->post("servers/{$serverId}/webapps/{$webAppId}/ssl", $data);
+		return new SSL($ssl, $this);
+	}
+
+
+	/**
+	 * SSL
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @return SSL
+	 *
+	 */
+	public function SSL(int $serverId, int $webAppId)
+	{
+		$ssl = $this->get("servers/{$serverId}/webapps/{$webAppId}/ssl");
+		return new SSL($ssl, $this);
+	}
+
+
+	/**
+	 * Update SSL
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  int $sslId
+	 * @param  array $data
+	 * @return SSL
+	 *
+	 */
+	public function updateSSL(int $serverId, int $webAppId, int $sslId, array $data)
+	{
+		$ssl = $this->patch("servers/{$serverId}/webapps/{$webAppId}/ssl/{$sslId}", $data);
+		return new SSL($ssl, $this);
+	}
+
+
+	/**
+	 * Redeploy SSL
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  int $sslId
+	 * @param  array $data
+	 * @return SSL
+	 *
+	 */
+	public function redeploySSL(int $serverId, int $webAppId, int $sslId)
+	{
+		$ssl = $this->put("servers/{$serverId}/webapps/{$webAppId}/ssl/{$sslId}");
+		return new SSL($ssl, $this);
+	}
+
+
+	/**
+	 * Delete SSL
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @param  int $sslId
+	 * @return SSL
+	 *
+	 */
+	public function deleteSSL(int $serverId, int $webAppId, int $sslId)
+	{
+		$ssl = $this->delete("servers/{$serverId}/webapps/{$webAppId}/ssl/{$sslId}");
+		return new SSL($ssl, $this);
+	}
+
+
+	/**
+	 * Settings
+	 *
+	 * @param  int $serverId
+	 * @param  int $webAppId
+	 * @return []
+	 *
+	 */
+	public function webAppSettings(int $serverId, int $webAppId)
+	{
+		$response = $this->get("servers/{$serverId}/webapps/{$webAppId}/settings");
+		return $response;
+	}
+
+
+	/**
+	 * Change PHP Version
+	 *
+	 * @param  int    $serverId
+	 * @param  int    $webAppId
+	 * @param  string $version
+	 * @return WebApp
+	 *
+	 */
+	public function changeWebAppPHPVersion(int $serverId, int $webAppId, string $version)
+	{
+		$data = ['phpVersion' => $version];
+		$webapp = $this->patch("servers/{$serverId}/webapps/{$webAppId}/settings/php", $data);
+		return new WebApp($webapp, $this);
+	}
+
+
+	/**
+	 * Update FPM/Nginx settings
+	 *
+	 * @param  int    $serverId
+	 * @param  int    $webAppId
+	 * @param  array  $data
+	 * @return WebApp
+	 *
+	 */
+	public function updateWebAppFPMNginx(int $serverId, int $webAppId, array $data)
+	{
+		$webapp = $this->patch("servers/{$serverId}/webapps/{$webAppId}/settings/fpmnginx", $data);
+		return new WebApp($webapp, $this);
+	}
+
+
+	/**
+	 * Get Web Application event log
+	 *
+	 * @param  int    $serverId
+	 * @param  int    $webAppId
+	 * @param  string $search
+	 * @return Log[]
+	 *
+	 */
+	public function webAppLog(int $serverId, int $webAppId, string $search = '')
+	{
+		$query = ['search' => $search];
+		$query = array_filter($query, 'strlen');
+
+		$response = $this->getAllData("servers/{$serverId}/webapps/{$webAppId}/log", $query);
+		return $this->transformCollection($response, Log::class);
+	}
+
+
+	/**
+	 * Delete Web Application
+	 *
+	 * @param  int    $serverId
+	 * @param  int    $webAppId
+	 * @return WebApp
+	 *
+	 */
+	public function deleteWebApp(int $serverId, int $webAppId)
+	{
+		$webapp = $this->delete("servers/{$serverId}/webapps/{$webAppId}");
+		return new WebApp($webapp, $this);
+	}
+
 
 }

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\RuncloudApi\Resources;
+namespace OnHover\RunCloud\Resources;
+
 
 class Domain extends Resource
 {
 
-    public $id;
+	public $id;
 	public $name;
-	public $idWebapp;
-	public $idServer;
+	public $createdAt;
 
 }
