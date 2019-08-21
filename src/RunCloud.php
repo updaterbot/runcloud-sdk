@@ -19,6 +19,7 @@ class RunCloud
 		Actions\ManagesCronJobs,
 		Actions\ManagesSupervisor,
 		Actions\ManagesServices,
+		Actions\ManagesSecurity,
 		Actions\ManagesStaticData;
 
 
