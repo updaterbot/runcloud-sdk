@@ -18,6 +18,7 @@ class RunCloud
 		Actions\ManagesSSHKeys,
 		Actions\ManagesCronJobs,
 		Actions\ManagesSupervisor,
+		Actions\ManagesServices,
 		Actions\ManagesStaticData;
 
 
