@@ -3,6 +3,7 @@
 namespace OnHover\RunCloud;
 
 use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Exception\ClientException;
 use OnHover\RunCloud\Exceptions\UnwantedRedirectException;
 use OnHover\RunCloud\Exceptions\AuthenticationFailedException;
 use OnHover\RunCloud\Exceptions\ForbiddenRequestException;
@@ -95,20 +96,11 @@ trait MakesHttpRequests
 			}
 		}
 
-		$response = $this->guzzle->request($verb, $uri, $options);
-
-		if ($response->getStatusCode() != 200) {
-			return $this->handleRequestError($response);
+		try {
+			$response = $this->guzzle->request($verb, $uri, $options);
+		} catch (ClientException $e) {
+			return $this->handleRequestError($e->getResponse());
 		}
-
-		// $contentType = $response->getHeaders()["Content-Type"][0];
-		// $contentType = $response->getHeader('Content-Type');
-
-		// dd($contentType);
-
-		// if ($response->header['Content-Type'] != 'application/json') {
-		//     throw new ContentTypeNotManagedException();
-		// }
 
 		$responseBody = (string) $response->getBody();
 
