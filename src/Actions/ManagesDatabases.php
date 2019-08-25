@@ -33,13 +33,16 @@ trait ManagesDatabases
 	 * Get the collection of databases
 	 *
 	 * @param  int $serverId
-	 *
+	 * @param  string $search
 	 * @return Database[]
 	 *
 	 */
-	public function databases(int $serverId)
+	public function databases(int $serverId, string $search = '')
 	{
-		$response = $this->getAllData("servers/{$serverId}/databases");
+		$query = ['search' => $search];
+		$query = array_filter($query, 'strlen');
+
+		$response = $this->getAllData("servers/{$serverId}/databases", $query);
 		return $this->transformCollection($response, Database::class);
 	}
 
