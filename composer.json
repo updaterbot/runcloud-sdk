@@ -1,5 +1,5 @@
 {
-	"name": "onhover/runcloud-sdk",
+	"name": "updaterbot/runcloud-sdk",
 	"description": "RunCloud PHP SDK (Unofficial)",
 	"keywords": ["runcloud", "api", "sdk"],
 	"homepage": "",
@@ -22,9 +22,9 @@
 		}
 	],
 	"require": {
-		"php": "^7.2.5 || ^8.0",
-		"guzzlehttp/guzzle": "^7.5.1",
-	},
+        "php": "^7.2.5 || ^8.0",
+        "guzzlehttp/guzzle": "^7.5.1"
+    },
 	"autoload": {
 		"psr-4": {
 			"OnHover\\RunCloud\\": "src/"
