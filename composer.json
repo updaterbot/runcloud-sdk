@@ -2,6 +2,7 @@
 	"name": "updaterbot/runcloud-sdk",
 	"description": "RunCloud PHP SDK (Unofficial)",
 	"keywords": ["runcloud", "api", "sdk"],
+	"version": "1.0.1",
 	"homepage": "",
 	"license": "MIT",
 	"authors": [
