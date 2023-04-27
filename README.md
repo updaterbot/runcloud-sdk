@@ -10,7 +10,7 @@ This SDK helps you make API calls to the [RunCloud](https://runcloud.io) Version
 Install the SDK in your project using Composer:
 
 ```
-composer require onhover/runcloud-sdk
+composer require updaterbot/runcloud-sdk
 ```
 
 Use Composer's autoload:
